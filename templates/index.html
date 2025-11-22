@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Grid Master</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> GRID MASTER</h1>
+            
+            <p class="subtitle">AI Traffic Control System</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- Left Panel: Camera Feed -->
+            <div class="camera-panel">
+                <div class="panel-header">
+                    <h2>Traffic Camera Footage</h2>
+                    <div class="camera-controls">
+                        <button class="btn btn-primary" id="start-camera-btn">Start Camera</button>
+                        <button class="btn btn-danger" id="stop-camera-btn" disabled>Stop Camera</button>
+                    </div>
+                </div> 
+                <div class="camera-container">
+                    <video id="camera-video" autoplay playsinline></video>
+                    <canvas id="camera-canvas"></canvas>
+                    <div class="no-camera" id="no-camera">
+                        <p>📷 Click <span id="startcamera">"Start Camera"</span> to begin traffic monitoring</p>
+                    </div>
+                </div>
+                
+                <!-- Upload Options -->
+                <div class="upload-section">
+                    <h3 style="margin-bottom: 15px; color: #333;">Upload Files</h3>
+                    
+                    <!-- Image Upload -->
+                    <div class="upload-option">
+                        <div class="upload-area" id="image-upload-area">
+                            <input type="file" id="image-input" accept="image/*" hidden>
+                            <div class="upload-icon">📷</div>
+                            <p>Upload Image</p>
+                            <p class="file-info">PNG, JPG, JPEG (Recommended for best detection)</p>
+                        </div>
+                        <button class="btn btn-secondary" id="process-image-btn" disabled>Process Image</button>
+                    </div>
+                    
+                    <!-- Video Upload -->
+                    <div class="upload-option" style="margin-top: 15px;">
+                        <div class="upload-area" id="video-upload-area">
+                            <input type="file" id="video-input" accept="video/*" hidden>
+                            <div class="upload-icon">🎬</div>
+                            <p>Upload Video</p>
+                            <p class="file-info">MP4, AVI, MOV</p>
+                        </div>
+                        <button class="btn btn-secondary" id="process-video-btn" disabled>Process Video</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Traffic Control & Stats -->
+            <div class="control-panel">
+                <!-- Traffic Signal Display (4 signals) -->
+                <div class="signal-container">
+                    <h3>🚦 Traffic Signals (4-way)</h3>
+                    <div class="signals-grid">
+                        <div class="signal-box" id="signal-1">
+                            <div class="signal-label">Signal 1</div>
+                            <div class="signal-light red" id="signal-1-red"></div>
+                            <div class="signal-light yellow" id="signal-1-yellow"></div>
+                            <div class="signal-light green" id="signal-1-green"></div>
+                            <div class="signal-status" id="signal-1-status">RED</div>
+                        </div>
+                        <div class="signal-box" id="signal-2">
+                            <div class="signal-label">Signal 2</div>
+                            <div class="signal-light red" id="signal-2-red"></div>
+                            <div class="signal-light yellow" id="signal-2-yellow"></div>
+                            <div class="signal-light green" id="signal-2-green"></div>
+                            <div class="signal-status" id="signal-2-status">RED</div>
+                        </div>
+                        <div class="signal-box" id="signal-3">
+                            <div class="signal-label">Signal 3</div>
+                            <div class="signal-light red" id="signal-3-red"></div>
+                            <div class="signal-light yellow" id="signal-3-yellow"></div>
+                            <div class="signal-light green" id="signal-3-green"></div>
+                            <div class="signal-status" id="signal-3-status">RED</div>
+                        </div>
+                        <div class="signal-box" id="signal-4">
+                            <div class="signal-label">Signal 4</div>
+                            <div class="signal-light red" id="signal-4-red"></div>
+                            <div class="signal-light yellow" id="signal-4-yellow"></div>
+                            <div class="signal-light green" id="signal-4-green"></div>
+                            <div class="signal-status" id="signal-4-status">RED</div>
+                        </div>
+                    </div>
+                    <div class="emergency-alert" id="emergency-alert" style="display: none;">
+                        <span class="alert-icon">🚨</span>
+                        <span class="alert-text">EMERGENCY VEHICLE DETECTED!!</span>
+                    </div>
+                </div>
+
+                <!-- Manual Signal Control -->
+                <div class="manual-control">
+                    <h3>Manual Control</h3>
+                    <div class="manual-toggle">
+                        <button id="manual-toggle" class="btn btn-secondary" onclick="toggleManualMode()">Enable Manual Mode</button>
+                        <span id="manual-mode-indicator" style="display:none; margin-left:8px; font-weight:700; color:#dc3545;">MANUAL ACTIVE</span>
+                    </div>
+                    <div class="control-buttons">
+                        <div style="font-weight:700; margin-bottom:6px; color:#333;">Global Controls (apply to ALL signals)</div>
+                        <button class="btn btn-red" onclick="setSignal('red')">RED</button>
+                        <button class="btn btn-yellow" onclick="setSignal('yellow')">YELLOW</button>
+                        <button class="btn btn-green" onclick="setSignal('green')">GREEN</button>
+                    </div>
+                    <!-- Per-signal direct controls -->
+                    <div class="per-signal-controls">
+                        <h4 style="margin-top:12px; color:#333;">Per-Signal Controls</h4>
+                        <div class="per-signal-grid">
+                            <div class="per-signal">
+                                <div class="per-signal-label">Signal 1</div>
+                                <div class="per-signal-buttons">
+                                    <button class="btn btn-red compact" title="Set Signal 1 RED" onclick="setSignal('red', 0)">R</button>
+                                    <button class="btn btn-yellow compact" title="Set Signal 1 YELLOW" onclick="setSignal('yellow', 0)">Y</button>
+                                    <button class="btn btn-green compact" title="Set Signal 1 GREEN" onclick="setSignal('green', 0)">G</button>
+                                </div>
+                            </div>
+                            <div class="per-signal">
+                                <div class="per-signal-label">Signal 2</div>
+                                <div class="per-signal-buttons">
+                                    <button class="btn btn-red compact" title="Set Signal 2 RED" onclick="setSignal('red', 1)">R</button>
+                                    <button class="btn btn-yellow compact" title="Set Signal 2 YELLOW" onclick="setSignal('yellow', 1)">Y</button>
+                                    <button class="btn btn-green compact" title="Set Signal 2 GREEN" onclick="setSignal('green', 1)">G</button>
+                                </div>
+                            </div>
+                            <div class="per-signal">
+                                <div class="per-signal-label">Signal 3</div>
+                                <div class="per-signal-buttons">
+                                    <button class="btn btn-red compact" title="Set Signal 3 RED" onclick="setSignal('red', 2)">R</button>
+                                    <button class="btn btn-yellow compact" title="Set Signal 3 YELLOW" onclick="setSignal('yellow', 2)">Y</button>
+                                    <button class="btn btn-green compact" title="Set Signal 3 GREEN" onclick="setSignal('green', 2)">G</button>
+                                </div>
+                            </div>
+                            <div class="per-signal">
+                                <div class="per-signal-label">Signal 4</div>
+                                <div class="per-signal-buttons">
+                                    <button class="btn btn-red compact" title="Set Signal 4 RED" onclick="setSignal('red', 3)">R</button>
+                                    <button class="btn btn-yellow compact" title="Set Signal 4 YELLOW" onclick="setSignal('yellow', 3)">Y</button>
+                                    <button class="btn btn-green compact" title="Set Signal 4 GREEN" onclick="setSignal('green', 3)">G</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Traffic Statistics -->
+                <div class="stats-container">
+                    <h3>Traffic Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Vehicles:</span>
+                        <span class="stat-value" id="total-vehicles">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Heavy Vehicles:</span>
+                        <span class="stat-value" id="current-vehicles">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Emergency Vehicles:</span>
+                        <span class="stat-value" id="emergency-count">0</span>
+                    </div>
+                </div>
+
+                <!-- Detected Vehicles List -->
+                <div class="vehicles-container">
+                    <h3> Detected Heavy Vehicles</h3>
+                    <div class="vehicles-list" id="vehicles-list">
+                        <p class="no-vehicles">No vehicles detected yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+    <footer>
+        <p id="developers" >&copy; Developed by C.Rithwik, T.Sai Supreeth, C.K.Aruna Sai, Azaan</p>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
