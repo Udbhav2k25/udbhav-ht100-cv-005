@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚦 AI Traffic Control System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚦 AI Traffic Control System</h1>
+            <p>Real-time Vehicle Detection & Emergency Vehicle Priority</p>
+            <p class="subtitle">Auto-Green Signals for Emergency Vehicles</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- Left Panel: Camera Feed -->
+            <div class="camera-panel">
+                <div class="panel-header">
+                    <h2>📹 Traffic Camera Feed</h2>
+                    <div class="camera-controls">
+                        <button class="btn btn-primary" id="start-camera-btn">Start Camera</button>
+                        <button class="btn btn-danger" id="stop-camera-btn" disabled>Stop Camera</button>
+                    </div>
+                </div>
+                <div class="camera-container">
+                    <video id="camera-video" autoplay playsinline></video>
+                    <canvas id="camera-canvas"></canvas>
+                    <div class="no-camera" id="no-camera">
+                        <p>📷 Click "Start Camera" to begin traffic monitoring</p>
+                    </div>
+                </div>
+                
+                <!-- Upload Options -->
+                <div class="upload-section">
+                    <h3 style="margin-bottom: 15px; color: #333;">Upload Files</h3>
+                    
+                    <!-- Image Upload -->
+                    <div class="upload-option">
+                        <div class="upload-area" id="image-upload-area">
+                            <input type="file" id="image-input" accept="image/*" hidden>
+                            <div class="upload-icon">📷</div>
+                            <p>Upload Image</p>
+                            <p class="file-info">PNG, JPG, JPEG (Recommended for best detection)</p>
+                        </div>
+                        <button class="btn btn-secondary" id="process-image-btn" disabled>Process Image</button>
+                    </div>
+                    
+                    <!-- Video Upload -->
+                    <div class="upload-option" style="margin-top: 15px;">
+                        <div class="upload-area" id="video-upload-area">
+                            <input type="file" id="video-input" accept="video/*" hidden>
+                            <div class="upload-icon">🎬</div>
+                            <p>Upload Video</p>
+                            <p class="file-info">MP4, AVI, MOV</p>
+                        </div>
+                        <button class="btn btn-secondary" id="process-video-btn" disabled>Process Video</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Traffic Control & Stats -->
+            <div class="control-panel">
+                <!-- Traffic Signal Display -->
+                <div class="signal-container">
+                    <h3>🚦 Traffic Signal</h3>
+                    <div class="traffic-signal">
+                        <div class="signal-light red" id="red-light"></div>
+                        <div class="signal-light yellow" id="yellow-light"></div>
+                        <div class="signal-light green" id="green-light"></div>
+                    </div>
+                    <div class="signal-status" id="signal-status">RED</div>
+                    <div class="emergency-alert" id="emergency-alert" style="display: none;">
+                        <span class="alert-icon">🚨</span>
+                        <span class="alert-text">EMERGENCY VEHICLE DETECTED</span>
+                    </div>
+                </div>
+
+                <!-- Manual Signal Control -->
+                <div class="manual-control">
+                    <h3>Manual Control</h3>
+                    <div class="control-buttons">
+                        <button class="btn btn-red" onclick="setSignal('red')">RED</button>
+                        <button class="btn btn-yellow" onclick="setSignal('yellow')">YELLOW</button>
+                        <button class="btn btn-green" onclick="setSignal('green')">GREEN</button>
+                    </div>
+                </div>
+
+                <!-- Traffic Statistics -->
+                <div class="stats-container">
+                    <h3>📊 Traffic Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Vehicles:</span>
+                        <span class="stat-value" id="total-vehicles">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Current Vehicles:</span>
+                        <span class="stat-value" id="current-vehicles">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Emergency Vehicles:</span>
+                        <span class="stat-value" id="emergency-count">0</span>
+                    </div>
+                </div>
+
+                <!-- Detected Vehicles List -->
+                <div class="vehicles-container">
+                    <h3>🚗 Detected Vehicles</h3>
+                    <div class="vehicles-list" id="vehicles-list">
+                        <p class="no-vehicles">No vehicles detected yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
